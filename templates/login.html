@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+	<form id="login">
+    <h1>Login</h1>
+    <fieldset id="inputs">
+        <input id="username" type="text" placeholder="Username" autofocus required>
+        <input id="password" type="password" placeholder="Password" required>
+    		<input type="submit" id="button" value="Log in">
+    </fieldset>
+</form>
+<div id="login_response"></div>
+<script type="text/javascript">
+$("#login_response").hide();
+$('#button').click(function(e) {
+	var username = $('#username').val();
+	var password = $('#password').val();
+	$.ajax({
+		type: 'POST',
+		url: 'http://localhost:5000/login',
+		data: {'username': username, 'password': password},
+		success: function(data) {
+		   window.location.href = data;
+		},
+		error: function() {
+		    $("#login_response").html("<p>Invalid username or password.</p>")
+		    $("#login_response").css("color", "red");
+		    $("#login_response").stop(true,true).fadeIn(300).delay(3000).fadeOut(1500)
+		}
+	});
+	e.preventDefault();
+});
+
+
+</script>
+
+{% endblock %}

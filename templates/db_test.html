@@ -1,0 +1,17 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+				(function poll() {
+				$.ajax({ 
+								type: "POST",
+								url: "http://localhost:5000/poll_server", 
+							 	data: {'len': {{db_count}}}, 
+								complete: poll,
+								async: true,
+								timeout: 30000,
+								success: function(data) {
+									$(document.body).append(data);
+								}
+							});
+			})();
+
+</script>

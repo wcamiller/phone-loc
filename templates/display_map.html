@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <style type="text/css">
+  html { height: 100% }
+  body { height: 100%; margin: 0; padding: 0}
+  map-canvas { height: 100%}
+  </style>
+  <script type="text/javascript"
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdExfS6aG2ojq_Prc7EpRn_-_B37L8FlE&sensor=SET_TO_TRUE_OR_FALSE">
+  </script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="/static/js/gmap3.js"></script>
+</head>
+<body>
+  <div id="session-info" style="width: 100%; z-index: 25; background: inhereit; position: fixed; color: red; left: 100px; font-size: .85em"></div>
+  <div id="logout" style="width: 100%; z-index: 26; background: inhereit; position: fixed; color: red; left: 1500px; font-size: .85em">
+      <a href="http://localhost:5000/logout">Logout</a>
+  </div>
+  <div id="purge-db" style="width: 100%; z-index: 25; background: inhereit; position: fixed; color: red; left: 250px; font-size: .85em">
+    <a href="http://localhost:5000/purge_db">Purge Database<a>
+  </div>
+  <div id="map-canvas" style="width: 100%; height: 100%"></div>
+</body>
+</html>
+  <script type="text/javascript">
+
+    $.getJSON("http://localhost:5000/setup_map", function(data) {
+
+            var locs = JSON.parse(JSON.stringify(data['locs']));
+            var colors = JSON.parse(JSON.stringify(data['colors']));
+            if (!locs.length) {
+              locs = [[37.88, -122.25]];
+            }
+            $("#map-canvas").gmap3({
+                map:{
+                    options:{
+                        center: locs[locs.length - 1],
+                        zoom: 15
+                    }
+                }
+            });
+
+            for (var i=0;i<colors.length;i++) {
+                $("#map-canvas").gmap3({
+                    polyline:{
+                        options:{
+                            geodesic: true,
+                            center: locs[0],
+                            strokeColor: colors[i],
+                            strokeOpacity: 1.0,
+                            strokeWeight: 1.5,
+                            path: [
+                                locs[i], locs[i + 1]
+                            ]
+                        }
+                    }
+                });
+            }
+        }
+
+    );
+
+
+  (function poll() {
+      setTimeout(function() {
+        $.ajax({
+        type: "POST",
+        url: "http://localhost:5000/poll_server",
+        dataType: "json",
+        data: {'len': {{db_count}} },
+        success: function(data) {
+
+        var locs = JSON.parse(JSON.stringify(data['locs']));
+        var colors = JSON.parse(JSON.stringify(data['colors']));
+
+        for (var i=0;i<colors.length;i++) {
+            $("#map-canvas").gmap3({
+              polyline:{
+                options:{
+                  center: true,
+                  geodesic: true,
+                  center: locs[0],
+                  strokeColor: colors[i],
+                  strokeOpacity: 1.0,
+                  strokeWeight: 1.5,
+                  path: [
+                  locs[i], locs[i + 1]
+                  ]
+                }
+              }
+            });
+          }
+        },
+        complete: poll()
+      })}, 6000);
+  })();
+
+
+
+
+    $("#session-info").html("Welcome, {{username}}.");
+
+</script>
