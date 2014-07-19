@@ -11,7 +11,7 @@ import time, os
 app = Flask(__name__)
 app.secret_key = '2c1a9ed49d562f6b363341776f159b0600876794006ea0ada2a35fa2fabecdf9e258f3bb'
 
-engine = create_engine('sqlite:////users/wcamiller/github/phone-loc/app/db/db.db', echo=True)
+engine = create_engine('sqlite:////home/wcamiller/phone-loc/db/db.db', echo=True)
 Base = declarative_base()
 Session = scoped_session(sessionmaker(bind=engine))
 
@@ -113,7 +113,7 @@ def login():
 		if username_valid and submitted_password == db_password:
 			first_name = db_session.query(User).filter(User.username == submitted_username).one().first_name
 			session['username'] = submitted_username
-			return "http://localhost:5000/"
+			return "https://wcamiller.pythonanywhere.com/"
 		else:
 			return BadRequest()
 	return render_template('login.html')
@@ -140,7 +140,7 @@ def setup_map():
 @login_required
 def run_post():
 	db_session = Session()
-	value = request.json['array']
+	value = request.json['location']
 	db_session.add(MapData(lat=value[0], long=value[1], timestamp=value[2]))
 	db_session.commit()
 	return str(value)
