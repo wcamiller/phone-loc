@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import time, os
 
 app = Flask(__name__)
-app.secret_key = '2c1a9ed49d562f6b363341776f159b0600876794006ea0ada2a35fa2fabecdf9e258f3bb'
+app.secret_key = 'key'
 
 engine = create_engine('sqlite:////home/wcamiller/phone-loc/db/db.db', echo=True)
 Base = declarative_base()
